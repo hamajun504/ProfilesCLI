@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/hamajun504/mws/internal/cli"
+	"github.com/hamajun504/cmd/mws/internal/cli"
 )
 
 func main() {
