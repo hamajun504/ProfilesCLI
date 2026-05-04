@@ -4,6 +4,6 @@ import (
 	"fmt"
 )
 
-func Run() {
-	fmt.Println("Hello World")
+func Run(args []string) {
+	fmt.Println(args)
 }
