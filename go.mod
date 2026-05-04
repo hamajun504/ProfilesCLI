@@ -1,3 +1,3 @@
-module github.com/hamajun504/cmd/mws
+module github.com/hamajun504/ProfilesCLI
 
 go 1.26
