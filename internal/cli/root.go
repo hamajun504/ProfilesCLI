@@ -1,9 +1,8 @@
 package cli
 
-import (
-	"fmt"
-)
-
 func Run(args []string) {
-	fmt.Println(args)
+	if args[0] == "profile" {
+		runProfile(args[1:])
+	}
+
 }
