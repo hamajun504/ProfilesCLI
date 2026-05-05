@@ -31,6 +31,9 @@ func Load(name string) (Profile, error) {
 	}
 	p := Profile{}
 	err = yaml.Unmarshal(data, &p)
+	if err != nil {
+		return Profile{}, err
+	}
 	return p, nil
 }
 
