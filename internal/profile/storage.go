@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -91,4 +92,36 @@ func Exist(name string) (bool, error) {
 	}
 	return false, err
 
+}
+
+type fileStructure int
+
+const (
+	ok fileStructure = iota
+	invalid
+	extraFields
+)
+
+func validateFileStructure(path string) fileStructure {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return invalid
+	}
+	decoder_kwn := yaml.NewDecoder(bytes.NewReader(data))
+	decoder_kwn.KnownFields(true)
+	decoder_unk := yaml.NewDecoder(bytes.NewReader(data))
+	decoder_unk.KnownFields(false)
+
+	var p Profile
+
+	if decoder_unk.Decode(&p) != nil {
+		return invalid
+	}
+	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
+		return invalid
+	}
+	if decoder_kwn.Decode(&p) != nil {
+		return extraFields
+	}
+	return ok
 }
