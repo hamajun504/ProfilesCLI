@@ -35,7 +35,7 @@ func Load(name string) (Profile, error) {
 
 var ErrNotYaml = errors.New("the file is not a yaml")
 
-func SearchAll(path string) ([]string, error) {
+func SearchAllCorrect(path string) ([]string, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
 		return []string{}, err
@@ -49,11 +49,29 @@ func SearchAll(path string) ([]string, error) {
 			}
 			return profileNames, err
 		}
-
-		profileNames = append(profileNames, name)
+		path, err = closePathWithSlash(path)
+		if err != nil {
+			return []string{}, err
+		}
+		struc, err := validateFileStructure(path + dirEntry[i].Name())
+		if err != nil {
+			return []string{}, err
+		}
+		if struc == ok {
+			profileNames = append(profileNames, name)
+		}
 
 	}
 	return profileNames, nil
+}
+func closePathWithSlash(path string) (string, error) {
+	if path == "" {
+		return "", fmt.Errorf("attempt to access an empty path")
+	}
+	if path[len(path)-1] == '/' {
+		return path, nil
+	}
+	return path + "/", nil
 }
 
 func getProfileName(fileName string) (string, error) {
@@ -102,10 +120,10 @@ const (
 	extraFields
 )
 
-func validateFileStructure(path string) fileStructure {
+func validateFileStructure(path string) (fileStructure, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return invalid
+		return invalid, err
 	}
 	decoder_kwn := yaml.NewDecoder(bytes.NewReader(data))
 	decoder_kwn.KnownFields(true)
@@ -115,13 +133,13 @@ func validateFileStructure(path string) fileStructure {
 	var p Profile
 
 	if decoder_unk.Decode(&p) != nil {
-		return invalid
+		return invalid, nil
 	}
 	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
-		return invalid
+		return invalid, nil
 	}
 	if decoder_kwn.Decode(&p) != nil {
-		return extraFields
+		return extraFields, nil
 	}
-	return ok
+	return ok, nil
 }

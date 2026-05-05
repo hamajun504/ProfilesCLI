@@ -33,7 +33,7 @@ func Get(name string) (string, string, error) {
 }
 
 func List() ([]string, error) {
-	profileNames, err := SearchAll(".")
+	profileNames, err := SearchAllCorrect(".")
 	if err != nil {
 		return []string{}, err
 	}
