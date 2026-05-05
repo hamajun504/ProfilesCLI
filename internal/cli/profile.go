@@ -16,10 +16,12 @@ func runProfile(args []string) error {
 	name := fs.String("name", "", "profile name")
 	user := fs.String("user", "", "user name")
 	project := fs.String("project", "", "project name")
-	forceOverwrite := fs.Bool("f", false, "quitly overwrite existing profiles")
 	extendedFiles := fs.Bool("e", false, "output files with extra fields")
 	allFiles := fs.Bool("a", false, "output all yaml-files")
 	longOutput := fs.Bool("l", false, "detailed output")
+	forceOverwrite := false
+	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
+	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
 
 	if len(args) == 0 {
 		printHelp()
@@ -36,7 +38,7 @@ func runProfile(args []string) error {
 		if err != nil {
 			return err
 		}
-		if exist && !*forceOverwrite {
+		if exist && !forceOverwrite {
 			ow, err := askToOverwrite(*name)
 			if err != nil {
 				return err
