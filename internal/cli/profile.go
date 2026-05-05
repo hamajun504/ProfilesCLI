@@ -1,8 +1,11 @@
 package cli
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/hamajun504/ProfilesCLI/internal/profile"
 )
@@ -25,6 +28,13 @@ func runProfile(args []string) error {
 
 	switch args[0] {
 	case "create":
+		exist, err := profile.Exist(*name)
+		if err != nil {
+			return err
+		}
+		if exist && !AskToOverwrite(*name) {
+			return nil
+		}
 		if err := profile.Create(*name, *user, *project); err != nil {
 			return err
 		}
@@ -71,4 +81,15 @@ func printGetOutput(name, user, project string) error {
 		"project:  " + project
 	_, err := fmt.Println(output)
 	return err
+}
+
+func AskToOverwrite(name string) bool {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("Profile %s already exist. Do you really want to overwrite it? [y/[n]]", name)
+	answer, _ := reader.ReadString('\n')
+	// err != nil means input ended not with \n, thats acceptable
+
+	answer = strings.TrimSpace(strings.ToLower(answer))
+
+	return answer == "y" || answer == "yes"
 }
