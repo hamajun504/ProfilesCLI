@@ -16,6 +16,7 @@ func Create(name, user, project string) error {
 		Project: project,
 	}
 	Save(name, p)
+	return nil
 }
 
 func Get(name string) (string, string, error) {
