@@ -17,8 +17,10 @@ func runProfile(args []string) error {
 	user := fs.String("user", "", "user name")
 	project := fs.String("project", "", "project name")
 	forceOverwrite := fs.Bool("f", false, "quitly overwrite existing profiles")
+	extendedFiles := fs.Bool("e", false, "quitly overwrite existing profiles")
+	allFiles := fs.Bool("a", false, "quitly overwrite existing profiles")
 
-	if len(args) == 0 || len(args) == 1 {
+	if len(args) == 0 {
 		printHelp()
 		return nil
 	}
@@ -48,7 +50,15 @@ func runProfile(args []string) error {
 		printGetOutput(*name, user, project)
 
 	case "list":
-		profiles, err := profile.List()
+		var err error
+		var profiles []string
+		if *allFiles {
+			profiles, err = profile.List(profile.Invalid)
+		} else if *extendedFiles {
+			profiles, err = profile.List(profile.ExtraFields)
+		} else {
+			profiles, err = profile.List(profile.Ok)
+		}
 		if err != nil {
 			return err
 		}

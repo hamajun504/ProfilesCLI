@@ -32,8 +32,17 @@ func Get(name string) (string, string, error) {
 	return p.User, p.Project, nil
 }
 
-func List() ([]string, error) {
-	profileNames, err := SearchAllCorrect(".")
+func List(flag FileStructure) ([]string, error) {
+	var err error
+	var profileNames []string
+	switch flag {
+	case Ok:
+		profileNames, err = SearchAllCorrect(".")
+	case ExtraFields:
+		profileNames, err = SearchAllExtended(".")
+	default:
+		profileNames, err = SearchAll(".")
+	}
 	if err != nil {
 		return []string{}, err
 	}

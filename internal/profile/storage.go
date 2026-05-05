@@ -57,13 +57,66 @@ func SearchAllCorrect(path string) ([]string, error) {
 		if err != nil {
 			return []string{}, err
 		}
-		if struc == ok {
+		if struc == Ok {
 			profileNames = append(profileNames, name)
 		}
 
 	}
 	return profileNames, nil
 }
+
+func SearchAllExtended(path string) ([]string, error) {
+	dirEntry, err := os.ReadDir(path)
+	if err != nil {
+		return []string{}, err
+	}
+	profileNames := make([]string, 0, len(dirEntry))
+	for i := range dirEntry {
+		name, err := getProfileName(dirEntry[i].Name())
+		if err != nil {
+			if errors.Is(err, ErrNotYaml) {
+				continue
+			}
+			return profileNames, err
+		}
+		path, err = closePathWithSlash(path)
+		if err != nil {
+			return []string{}, err
+		}
+		struc, err := validateFileStructure(path + dirEntry[i].Name())
+		if err != nil {
+			return []string{}, err
+		}
+		if struc == Ok || struc == ExtraFields {
+			profileNames = append(profileNames, name)
+		}
+	}
+	return profileNames, nil
+}
+
+func SearchAll(path string) ([]string, error) {
+	dirEntry, err := os.ReadDir(path)
+	if err != nil {
+		return []string{}, err
+	}
+	profileNames := make([]string, 0, len(dirEntry))
+	for i := range dirEntry {
+		name, err := getProfileName(dirEntry[i].Name())
+		if err != nil {
+			if errors.Is(err, ErrNotYaml) {
+				continue
+			}
+			return profileNames, err
+		}
+		path, err = closePathWithSlash(path)
+		if err != nil {
+			return []string{}, err
+		}
+		profileNames = append(profileNames, name)
+	}
+	return profileNames, nil
+}
+
 func closePathWithSlash(path string) (string, error) {
 	if path == "" {
 		return "", fmt.Errorf("attempt to access an empty path")
@@ -112,18 +165,18 @@ func Exist(name string) (bool, error) {
 
 }
 
-type fileStructure int
+type FileStructure int
 
 const (
-	ok fileStructure = iota
-	invalid
-	extraFields
+	Ok FileStructure = iota
+	Invalid
+	ExtraFields
 )
 
-func validateFileStructure(path string) (fileStructure, error) {
+func validateFileStructure(path string) (FileStructure, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return invalid, err
+		return Invalid, err
 	}
 	decoder_kwn := yaml.NewDecoder(bytes.NewReader(data))
 	decoder_kwn.KnownFields(true)
@@ -133,13 +186,13 @@ func validateFileStructure(path string) (fileStructure, error) {
 	var p Profile
 
 	if decoder_unk.Decode(&p) != nil {
-		return invalid, nil
+		return Invalid, nil
 	}
 	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
-		return invalid, nil
+		return Invalid, nil
 	}
 	if decoder_kwn.Decode(&p) != nil {
-		return extraFields, nil
+		return ExtraFields, nil
 	}
-	return ok, nil
+	return Ok, nil
 }
