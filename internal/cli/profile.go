@@ -84,6 +84,13 @@ func runProfile(args []string) error {
 		}
 
 	case "delete":
+		exist, err := profile.Exist(*name)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			fmt.Fprintln(os.Stderr, "profile not exist")
+		}
 		if err := profile.Delete(*name); err != nil {
 			return err
 		}

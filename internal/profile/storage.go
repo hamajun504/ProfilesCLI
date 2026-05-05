@@ -3,7 +3,6 @@ package profile
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -137,7 +136,6 @@ func Remove(name string) error {
 	err := os.Remove(fileName)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Fprintln(os.Stderr, "Profile not exist")
 			return nil
 		}
 		return err
