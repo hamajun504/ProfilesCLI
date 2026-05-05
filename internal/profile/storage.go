@@ -70,8 +70,7 @@ func Remove(name string) error {
 			return nil
 		}
 		if errors.Is(err, os.ErrPermission) {
-			fmt.Fprintln(os.Stderr, "No permission for file deletion")
-			return err
+			return fmt.Errorf("No permission for file deletion")
 		}
 	}
 	return nil
