@@ -34,7 +34,7 @@ func runProfile(args []string) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println(user, project)
+		printGetOutput(*name, user, project)
 
 	case "list":
 		profiles, err := profile.List()
@@ -62,5 +62,13 @@ func printProfiles(profiles []string) {
 
 func printHelp() error {
 	_, err := fmt.Println(help_message)
+	return err
+}
+
+func printGetOutput(name, user, project string) error {
+	output := "profile:  " + name + "\n" +
+		"user   :  " + user + "\n" +
+		"project:  " + project
+	_, err := fmt.Println(output)
 	return err
 }
