@@ -1,6 +1,16 @@
 package profile
 
-func Create(name, user, project string) {
+func Create(name, user, project string) error {
+	if err := validateNewName(name); err != nil {
+		return err
+	}
+	if err := validateUser(name); err != nil {
+		return err
+	}
+	if err := validateProject(name); err != nil {
+		return err
+	}
+
 	p := Profile{
 		User:    user,
 		Project: project,
