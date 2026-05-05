@@ -19,6 +19,17 @@ func validateNewName(name string) error {
 	return nil
 }
 
+func validateOldName(name string) error {
+	if name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if !strings.Contains(name, "/") {
+		return fmt.Errorf("name can't contain '/'")
+	}
+
+	return nil
+}
+
 func validateUser(user string) error {
 	user = strings.TrimSpace(user)
 

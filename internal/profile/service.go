@@ -20,6 +20,9 @@ func Create(name, user, project string) error {
 }
 
 func Get(name string) (string, string, error) {
+	if err := validateOldName(name); err != nil {
+		return "", "", err
+	}
 	p, err := Load(name)
 	if err != nil {
 		return "", "", err
