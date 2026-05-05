@@ -158,7 +158,7 @@ func Exist(name string) (bool, error) {
 	if err == nil {
 		return true, nil
 	}
-	if err == os.ErrNotExist {
+	if errors.Is(err, os.ErrNotExist) {
 		return false, nil
 	}
 	return false, err
