@@ -15,7 +15,9 @@ func Save(name string, p Profile) error {
 		return err
 	}
 	nameFile := getFileName(name)
-	os.WriteFile(nameFile, data, 0644)
+	if err = os.WriteFile(nameFile, data, 0644); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -66,16 +68,14 @@ func getFileName(name string) string {
 }
 
 func Remove(name string) error {
-	fileName := name + ".yaml"
+	fileName := getFileName(name)
 	err := os.Remove(fileName)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			fmt.Fprintln(os.Stderr, "Profile not exist")
 			return nil
 		}
-		if errors.Is(err, os.ErrPermission) {
-			return fmt.Errorf("No permission for file deletion")
-		}
+		return err
 	}
 	return nil
 

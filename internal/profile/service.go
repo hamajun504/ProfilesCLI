@@ -15,7 +15,9 @@ func Create(name, user, project string) error {
 		User:    user,
 		Project: project,
 	}
-	Save(name, p)
+	if err := Save(name, p); err != nil {
+		return err
+	}
 	return nil
 }
 

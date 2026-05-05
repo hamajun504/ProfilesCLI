@@ -24,7 +24,7 @@ func validateOldName(name string) error {
 		return fmt.Errorf("name is required")
 	}
 	if !strings.Contains(name, "/") {
-		return fmt.Errorf("name can't contain '/'")
+		return fmt.Errorf("name must not contain '/'")
 	}
 
 	return nil
