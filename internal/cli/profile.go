@@ -25,7 +25,9 @@ func runProfile(args []string) error {
 
 	switch args[0] {
 	case "create":
-		profile.Create(*name, *user, *project)
+		if err := profile.Create(*name, *user, *project); err != nil {
+			return err
+		}
 
 	case "get":
 		user, project, err := profile.Get(*name)
