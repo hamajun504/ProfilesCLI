@@ -15,3 +15,14 @@ func Save(name string, p Profile) error {
 	os.WriteFile(nameFile, data, 0644)
 	return nil
 }
+
+func Load(name string) (Profile, error) {
+	nameFile := name + ".yaml"
+	data, err := os.ReadFile(nameFile)
+	if err != nil {
+		return Profile{}, err
+	}
+	p := Profile{}
+	err = yaml.Unmarshal(data, &p)
+	return p, nil
+}

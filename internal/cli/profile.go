@@ -20,10 +20,14 @@ func runProfile(args []string) error {
 
 	switch args[0] {
 	case "create":
-		fmt.Println("Create Profile")
 		profile.Create(*name, *user, *project)
 	case "get":
 		fmt.Println("Return Profile")
+		user, project, err := profile.Get(*name)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(user, project)
 	case "list":
 		fmt.Println("List all profiles")
 	case "delete":
