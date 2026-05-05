@@ -36,8 +36,14 @@ func runProfile(args []string) error {
 		if err != nil {
 			return err
 		}
-		if exist && !*forceOverwrite && !AskToOverwrite(*name) {
-			return nil
+		if exist && !*forceOverwrite {
+			ow, err := askToOverwrite(*name)
+			if err != nil {
+				return err
+			}
+			if !ow {
+				return nil
+			}
 		}
 		if err := profile.Create(*name, *user, *project); err != nil {
 			return err
@@ -151,13 +157,16 @@ func printGetOutput(name, user, project string) error {
 	return err
 }
 
-func AskToOverwrite(name string) bool {
+func askToOverwrite(name string) (bool, error) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Printf("Profile %s already exist. Do you really want to overwrite it? [y/[n]]", name)
+	_, err := fmt.Printf("Profile %s already exist. Do you really want to overwrite it? [y/[n]]", name)
+	if err != nil {
+		return false, err
+	}
 	answer, _ := reader.ReadString('\n')
 	// err != nil means input ended not with \n, thats acceptable
 
 	answer = strings.TrimSpace(strings.ToLower(answer))
 
-	return answer == "y" || answer == "yes"
+	return answer == "y" || answer == "yes", nil
 }
