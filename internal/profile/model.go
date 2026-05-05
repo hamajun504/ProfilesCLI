@@ -1,6 +1,6 @@
 package profile
 
 type Profile struct {
-	User    string `yaml:""`
-	Project string `yaml:""`
+	User    string `yaml:"user"`
+	Project string `yaml:"project"`
 }
