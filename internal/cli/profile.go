@@ -14,6 +14,11 @@ func runProfile(args []string) error {
 	user := fs.String("user", "", "user name")
 	project := fs.String("project", "", "project name")
 
+	if len(args) == 0 || len(args) == 1 {
+		printHelp()
+		return nil
+	}
+
 	if err := fs.Parse(args[1:]); err != nil {
 		return err
 	}
@@ -40,6 +45,9 @@ func runProfile(args []string) error {
 		if err := profile.Delete(*name); err != nil {
 			return err
 		}
+
+	case "help":
+		printHelp()
 	}
 	return nil
 }
@@ -48,4 +56,9 @@ func printProfiles(profiles []string) {
 	for _, name := range profiles {
 		fmt.Println(name)
 	}
+}
+
+func printHelp() error {
+	_, err := fmt.Println(help_message)
+	return err
 }
