@@ -23,3 +23,11 @@ func List() ([]string, error) {
 	}
 	return profileNames, nil
 }
+
+func Delete(name string) error {
+	err := Remove(name)
+	if err != nil {
+		return err
+	}
+	return nil
+}

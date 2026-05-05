@@ -2,6 +2,7 @@ package profile
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 
@@ -39,10 +40,10 @@ func SearchAll(path string) ([]string, error) {
 	profileNames := make([]string, 0, len(dirEntry))
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
-		if errors.Is(err, ErrNotYaml) {
-			continue
-		}
 		if err != nil {
+			if errors.Is(err, ErrNotYaml) {
+				continue
+			}
 			return profileNames, err
 		}
 
@@ -57,9 +58,22 @@ func getProfileName(fileName string) (string, error) {
 	if found {
 		return name, nil
 	}
-	name, found = strings.CutSuffix(fileName, ".yml")
-	if found {
-		return name, nil
-	}
 	return "", ErrNotYaml
+}
+
+func Remove(name string) error {
+	fileName := name + ".yaml"
+	err := os.Remove(fileName)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			fmt.Println("Profile not exist")
+			return nil
+		}
+		if errors.Is(err, os.ErrPermission) {
+			fmt.Println("No permission for file deletion")
+			return err
+		}
+	}
+	return nil
+
 }
