@@ -9,6 +9,7 @@ Commands:
   profile get      Show profile by name
   profile list     List profiles in the current directory
   profile delete   Delete profile by name
+  profile help     Show this help message
   help             Show this help message
 
 Profile commands:
