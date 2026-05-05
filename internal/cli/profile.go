@@ -48,7 +48,9 @@ func runProfile(args []string) error {
 		if err != nil {
 			return err
 		}
-		printGetOutput(*name, user, project)
+		if err := printGetOutput(*name, user, project); err != nil {
+			return err
+		}
 
 	case "list":
 		var err error
@@ -66,9 +68,13 @@ func runProfile(args []string) error {
 			return err
 		}
 		if *longOutput {
-			printProfilesDetails(profilesNames, users, projects)
+			if err := printProfilesDetails(profilesNames, users, projects); err != nil {
+				return err
+			}
 		} else {
-			printProfilesShortly(profilesNames)
+			if err := printProfilesShortly(profilesNames); err != nil {
+				return err
+			}
 		}
 
 	case "delete":
@@ -77,8 +83,14 @@ func runProfile(args []string) error {
 		}
 
 	case "help":
-		printHelp()
+		if err := printHelp(); err != nil {
+			return err
+		}
+
+	default:
+		return fmt.Errorf("unknown profile command: %s", args[0])
 	}
+
 	return nil
 }
 

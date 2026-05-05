@@ -15,5 +15,5 @@ func Run(args []string) error {
 		}
 		return nil
 	}
-	return fmt.Errorf("Invalid command")
+	return fmt.Errorf("unknown command: %s", args[0])
 }
