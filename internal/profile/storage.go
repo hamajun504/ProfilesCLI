@@ -14,13 +14,13 @@ func Save(name string, p Profile) error {
 	if err != nil {
 		return err
 	}
-	nameFile := name + ".yaml"
+	nameFile := getFileName(name)
 	os.WriteFile(nameFile, data, 0644)
 	return nil
 }
 
 func Load(name string) (Profile, error) {
-	nameFile := name + ".yaml"
+	nameFile := getFileName(name)
 	data, err := os.ReadFile(nameFile)
 	if err != nil {
 		return Profile{}, err
@@ -59,6 +59,10 @@ func getProfileName(fileName string) (string, error) {
 		return name, nil
 	}
 	return "", ErrNotYaml
+}
+
+func getFileName(name string) string {
+	return name + ".yaml"
 }
 
 func Remove(name string) error {
