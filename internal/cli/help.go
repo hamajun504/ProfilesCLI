@@ -1,6 +1,6 @@
 package cli
 
-var help_message string = `mws profile - CLI for profiles managing
+var helpMessage string = `mws profile - CLI for profiles managing
 Usage:
   mws profile create --name=<name> --user=<user> --project=<project>
   mws profile get --name=<name>

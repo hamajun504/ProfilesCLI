@@ -139,7 +139,7 @@ func formLineProfilesDetails(name, user, project string, widthName, widthUser, w
 }
 
 func printHelp() error {
-	_, err := fmt.Println(help_message)
+	_, err := fmt.Println(helpMessage)
 	return err
 }
 
