@@ -41,6 +41,9 @@ func List() ([]string, error) {
 }
 
 func Delete(name string) error {
+	if err := validateOldName(name); err != nil {
+		return err
+	}
 	err := Remove(name)
 	if err != nil {
 		return err
