@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -50,11 +51,8 @@ func SearchAllCorrect(path string) ([]string, []Profile, error) {
 			}
 			return profileNames, profiles, err
 		}
-		path, err = closePathWithSlash(path)
-		if err != nil {
-			return []string{}, profiles, err
-		}
-		struc, prof, err := validateFileStructure(path + dirEntry[i].Name())
+
+		struc, prof, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()))
 		if err != nil {
 			return profileNames, profiles, err
 		}
@@ -82,11 +80,7 @@ func SearchAllExtended(path string) ([]string, []Profile, error) {
 			}
 			return profileNames, profiles, err
 		}
-		path, err = closePathWithSlash(path)
-		if err != nil {
-			return profileNames, profiles, err
-		}
-		struc, prof, err := validateFileStructure(path + dirEntry[i].Name())
+		struc, prof, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()))
 		if err != nil {
 			return profileNames, profiles, err
 		}
@@ -113,11 +107,7 @@ func SearchAll(path string) ([]string, []Profile, error) {
 			}
 			return profileNames, profiles, err
 		}
-		path, err = closePathWithSlash(path)
-		if err != nil {
-			return profileNames, profiles, err
-		}
-		_, prof, err := validateFileStructure(path + dirEntry[i].Name())
+		_, prof, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()))
 		if err != nil {
 			return profileNames, profiles, err
 		}
@@ -125,16 +115,6 @@ func SearchAll(path string) ([]string, []Profile, error) {
 		profileNames = append(profileNames, name)
 	}
 	return profileNames, profiles, nil
-}
-
-func closePathWithSlash(path string) (string, error) {
-	if path == "" {
-		return "", fmt.Errorf("attempt to access an empty path")
-	}
-	if path[len(path)-1] == '/' {
-		return path, nil
-	}
-	return path + "/", nil
 }
 
 func getProfileName(fileName string) (string, error) {
