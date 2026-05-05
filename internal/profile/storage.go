@@ -66,11 +66,11 @@ func Remove(name string) error {
 	err := os.Remove(fileName)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			fmt.Println("Profile not exist")
+			fmt.Fprintln(os.Stderr, "Profile not exist")
 			return nil
 		}
 		if errors.Is(err, os.ErrPermission) {
-			fmt.Println("No permission for file deletion")
+			fmt.Fprintln(os.Stderr, "No permission for file deletion")
 			return err
 		}
 	}
