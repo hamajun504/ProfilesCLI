@@ -22,16 +22,25 @@ func runProfile(args []string) error {
 	case "create":
 		profile.Create(*name, *user, *project)
 	case "get":
-		fmt.Println("Return Profile")
 		user, project, err := profile.Get(*name)
 		if err != nil {
-			fmt.Println(err)
+			return err
 		}
 		fmt.Println(user, project)
 	case "list":
-		fmt.Println("List all profiles")
+		profiles, err := profile.List()
+		if err != nil {
+			return err
+		}
+		printProfiles(profiles)
 	case "delete":
 		fmt.Println("Delete Profile")
 	}
 	return nil
+}
+
+func printProfiles(profiles []string) {
+	for _, name := range profiles {
+		fmt.Println(name)
+	}
 }

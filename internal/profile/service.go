@@ -15,3 +15,11 @@ func Get(name string) (string, string, error) {
 	}
 	return p.User, p.Project, nil
 }
+
+func List() ([]string, error) {
+	profileNames, err := SearchAll(".")
+	if err != nil {
+		return []string{}, err
+	}
+	return profileNames, nil
+}
