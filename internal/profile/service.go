@@ -4,10 +4,10 @@ func Create(name, user, project string) error {
 	if err := validateNewName(name); err != nil {
 		return err
 	}
-	if err := validateUser(name); err != nil {
+	if err := validateUser(user); err != nil {
 		return err
 	}
-	if err := validateProject(name); err != nil {
+	if err := validateProject(project); err != nil {
 		return err
 	}
 
