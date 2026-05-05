@@ -23,7 +23,7 @@ func validateOldName(name string) error {
 	if name == "" {
 		return fmt.Errorf("name is required")
 	}
-	if !strings.Contains(name, "/") {
+	if strings.Contains(name, "/") {
 		return fmt.Errorf("name must not contain '/'")
 	}
 
