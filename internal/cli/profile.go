@@ -16,6 +16,7 @@ func runProfile(args []string) error {
 	name := fs.String("name", "", "profile name")
 	user := fs.String("user", "", "user name")
 	project := fs.String("project", "", "project name")
+	forceOverwrite := fs.Bool("f", false, "quitly overwrite existing profiles")
 
 	if len(args) == 0 || len(args) == 1 {
 		printHelp()
@@ -32,7 +33,7 @@ func runProfile(args []string) error {
 		if err != nil {
 			return err
 		}
-		if exist && !AskToOverwrite(*name) {
+		if exist && !*forceOverwrite && !AskToOverwrite(*name) {
 			return nil
 		}
 		if err := profile.Create(*name, *user, *project); err != nil {
