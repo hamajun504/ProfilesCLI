@@ -17,8 +17,9 @@ func runProfile(args []string) error {
 	user := fs.String("user", "", "user name")
 	project := fs.String("project", "", "project name")
 	forceOverwrite := fs.Bool("f", false, "quitly overwrite existing profiles")
-	extendedFiles := fs.Bool("e", false, "quitly overwrite existing profiles")
-	allFiles := fs.Bool("a", false, "quitly overwrite existing profiles")
+	extendedFiles := fs.Bool("e", false, "output files with extra fields")
+	allFiles := fs.Bool("a", false, "output all yaml-files")
+	longOutput := fs.Bool("l", false, "detailed output")
 
 	if len(args) == 0 {
 		printHelp()
@@ -51,18 +52,24 @@ func runProfile(args []string) error {
 
 	case "list":
 		var err error
-		var profiles []string
+		var profilesNames []string
+		var users []string
+		var projects []string
 		if *allFiles {
-			profiles, err = profile.List(profile.Invalid)
+			profilesNames, users, projects, err = profile.List(profile.Invalid)
 		} else if *extendedFiles {
-			profiles, err = profile.List(profile.ExtraFields)
+			profilesNames, users, projects, err = profile.List(profile.ExtraFields)
 		} else {
-			profiles, err = profile.List(profile.Ok)
+			profilesNames, users, projects, err = profile.List(profile.Ok)
 		}
 		if err != nil {
 			return err
 		}
-		printProfiles(profiles)
+		if *longOutput {
+			printProfilesDetails(profilesNames, users, projects)
+		} else {
+			printProfilesShortly(profilesNames)
+		}
 
 	case "delete":
 		if err := profile.Delete(*name); err != nil {
@@ -75,10 +82,48 @@ func runProfile(args []string) error {
 	return nil
 }
 
-func printProfiles(profiles []string) {
+func printProfilesShortly(profiles []string) error {
 	for _, name := range profiles {
-		fmt.Println(name)
+		_, err := fmt.Println(name)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+func printProfilesDetails(names, users, projects []string) error {
+	if len(names) != len(users) || len(users) != len(projects) {
+		return fmt.Errorf("lengths of names, users and projects are not equal")
+	}
+	var namesMaxLen, usersMaxLen, projectsMaxLen int
+	for i := range names {
+		namesMaxLen = max(namesMaxLen, len(names[i]))
+		usersMaxLen = max(usersMaxLen, len(users[i]))
+		projectsMaxLen = max(projectsMaxLen, len(projects[i]))
+	}
+	namesMaxLen = max(namesMaxLen, len("/name/"))
+	usersMaxLen = max(usersMaxLen, len("/user/"))
+	projectsMaxLen = max(projectsMaxLen, len("/project/"))
+	{
+		header := formLineProfilesDetails("/name/", "/user/", "/project/", namesMaxLen, usersMaxLen, projectsMaxLen)
+		fmt.Println(header)
+		//fmt.Println(strings.Repeat("_", len(header)))
+	}
+	for i := range names {
+		_, err := fmt.Println(formLineProfilesDetails(names[i], users[i], projects[i], namesMaxLen, usersMaxLen, projectsMaxLen))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func formLineProfilesDetails(name, user, project string, widthName, widthUser, widthProject int) string {
+	nameField := name + strings.Repeat(" ", widthName-len(name)) + "  |"
+	userField := "  " + user + strings.Repeat(" ", widthUser-len(user)) + "  |"
+	projectField := "  " + project + strings.Repeat(" ", widthProject-len(project))
+	return nameField + userField + projectField
 }
 
 func printHelp() error {

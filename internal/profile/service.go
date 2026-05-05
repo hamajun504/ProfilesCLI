@@ -32,21 +32,30 @@ func Get(name string) (string, string, error) {
 	return p.User, p.Project, nil
 }
 
-func List(flag FileStructure) ([]string, error) {
+func List(flag FileStructure) ([]string, []string, []string, error) {
 	var err error
 	var profileNames []string
+	var profiles []Profile
 	switch flag {
 	case Ok:
-		profileNames, err = SearchAllCorrect(".")
+		profileNames, profiles, err = SearchAllCorrect(".")
 	case ExtraFields:
-		profileNames, err = SearchAllExtended(".")
+		profileNames, profiles, err = SearchAllExtended(".")
 	default:
-		profileNames, err = SearchAll(".")
+		profileNames, profiles, err = SearchAll(".")
 	}
 	if err != nil {
-		return []string{}, err
+		return []string{}, []string{}, []string{}, err
 	}
-	return profileNames, nil
+	users := make([]string, 0, len(profileNames))
+	projects := make([]string, 0, len(profileNames))
+
+	for i := range profileNames {
+		users = append(users, profiles[i].User)
+		projects = append(projects, profiles[i].Project)
+	}
+
+	return profileNames, users, projects, nil
 }
 
 func Delete(name string) error {

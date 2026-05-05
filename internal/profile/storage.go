@@ -35,86 +35,96 @@ func Load(name string) (Profile, error) {
 
 var ErrNotYaml = errors.New("the file is not a yaml")
 
-func SearchAllCorrect(path string) ([]string, error) {
+func SearchAllCorrect(path string) ([]string, []Profile, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		return []string{}, err
+		return []string{}, []Profile{}, err
 	}
 	profileNames := make([]string, 0, len(dirEntry))
+	profiles := make([]Profile, 0, len(dirEntry))
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
 		if err != nil {
 			if errors.Is(err, ErrNotYaml) {
 				continue
 			}
-			return profileNames, err
+			return profileNames, profiles, err
 		}
 		path, err = closePathWithSlash(path)
 		if err != nil {
-			return []string{}, err
+			return []string{}, profiles, err
 		}
-		struc, err := validateFileStructure(path + dirEntry[i].Name())
+		struc, prof, err := validateFileStructure(path + dirEntry[i].Name())
 		if err != nil {
-			return []string{}, err
+			return profileNames, profiles, err
 		}
 		if struc == Ok {
 			profileNames = append(profileNames, name)
+			profiles = append(profiles, prof)
 		}
 
 	}
-	return profileNames, nil
+	return profileNames, profiles, nil
 }
 
-func SearchAllExtended(path string) ([]string, error) {
+func SearchAllExtended(path string) ([]string, []Profile, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		return []string{}, err
+		return []string{}, []Profile{}, err
 	}
 	profileNames := make([]string, 0, len(dirEntry))
+	profiles := make([]Profile, 0, len(dirEntry))
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
 		if err != nil {
 			if errors.Is(err, ErrNotYaml) {
 				continue
 			}
-			return profileNames, err
+			return profileNames, profiles, err
 		}
 		path, err = closePathWithSlash(path)
 		if err != nil {
-			return []string{}, err
+			return profileNames, profiles, err
 		}
-		struc, err := validateFileStructure(path + dirEntry[i].Name())
+		struc, prof, err := validateFileStructure(path + dirEntry[i].Name())
 		if err != nil {
-			return []string{}, err
+			return profileNames, profiles, err
 		}
 		if struc == Ok || struc == ExtraFields {
 			profileNames = append(profileNames, name)
+			profiles = append(profiles, prof)
 		}
 	}
-	return profileNames, nil
+	return profileNames, profiles, err
 }
 
-func SearchAll(path string) ([]string, error) {
+func SearchAll(path string) ([]string, []Profile, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		return []string{}, err
+		return []string{}, []Profile{}, err
 	}
 	profileNames := make([]string, 0, len(dirEntry))
+	profiles := make([]Profile, 0, len(dirEntry))
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
 		if err != nil {
 			if errors.Is(err, ErrNotYaml) {
 				continue
 			}
-			return profileNames, err
+			return profileNames, profiles, err
 		}
 		path, err = closePathWithSlash(path)
 		if err != nil {
-			return []string{}, err
+			return profileNames, profiles, err
 		}
+		_, prof, err := validateFileStructure(path + dirEntry[i].Name())
+		if err != nil {
+			return profileNames, profiles, err
+		}
+		profiles = append(profiles, prof)
 		profileNames = append(profileNames, name)
 	}
-	return profileNames, nil
+	return profileNames, profiles, nil
 }
 
 func closePathWithSlash(path string) (string, error) {
@@ -173,10 +183,10 @@ const (
 	ExtraFields
 )
 
-func validateFileStructure(path string) (FileStructure, error) {
+func validateFileStructure(path string) (FileStructure, Profile, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return Invalid, err
+		return Invalid, Profile{}, err
 	}
 	decoder_kwn := yaml.NewDecoder(bytes.NewReader(data))
 	decoder_kwn.KnownFields(true)
@@ -186,13 +196,14 @@ func validateFileStructure(path string) (FileStructure, error) {
 	var p Profile
 
 	if decoder_unk.Decode(&p) != nil {
-		return Invalid, nil
+		return Invalid, Profile{}, nil
 	}
 	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
-		return Invalid, nil
+		return Invalid, p, nil
 	}
+	p_ext := p
 	if decoder_kwn.Decode(&p) != nil {
-		return ExtraFields, nil
+		return ExtraFields, p_ext, nil
 	}
-	return Ok, nil
+	return Ok, p, nil
 }
