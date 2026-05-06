@@ -166,22 +166,22 @@ func validateFileStructure(path string) (FileStructure, Profile, error) {
 	if err != nil {
 		return Invalid, Profile{}, err
 	}
-	decoderKwn := yaml.NewDecoder(bytes.NewReader(data))
-	decoderKwn.KnownFields(true)
-	decoderUnk := yaml.NewDecoder(bytes.NewReader(data))
-	decoderUnk.KnownFields(false)
+	decoderKnown := yaml.NewDecoder(bytes.NewReader(data))
+	decoderKnown.KnownFields(true)
+	decoderUnknown := yaml.NewDecoder(bytes.NewReader(data))
+	decoderUnknown.KnownFields(false)
 
 	var p Profile
 
-	if decoderUnk.Decode(&p) != nil {
+	if decoderUnknown.Decode(&p) != nil {
 		return Invalid, Profile{}, nil
 	}
 	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
 		return Invalid, p, nil
 	}
-	p_ext := p
-	if decoderKwn.Decode(&p) != nil {
-		return ExtraFields, p_ext, nil
+	pExtra := p
+	if decoderKnown.Decode(&p) != nil {
+		return ExtraFields, pExtra, nil
 	}
 	return Ok, p, nil
 }
