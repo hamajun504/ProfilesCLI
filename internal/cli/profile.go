@@ -75,7 +75,6 @@ func runProfileCreate(args []string) error {
 
 func runProfileGet(args []string) error {
 	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
-
 	name := fs.String("name", "", "profile name")
 
 	if err := fs.Parse(args); err != nil {
@@ -94,7 +93,6 @@ func runProfileGet(args []string) error {
 
 func runProfileList(args []string) error {
 	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
-
 	extendedFiles := fs.Bool("e", false, "output files with extra fields")
 	allFiles := fs.Bool("a", false, "output all yaml-files")
 	longOutput := fs.Bool("l", false, "detailed output")
@@ -135,13 +133,6 @@ func runProfileDelete(args []string) error {
 		return err
 	}
 
-	exist, err := profile.Exist(*name)
-	if err != nil {
-		return err
-	}
-	if !exist {
-		fmt.Fprintln(os.Stderr, "profile not exist")
-	}
 	if err := profile.Delete(*name); err != nil {
 		return err
 	}
