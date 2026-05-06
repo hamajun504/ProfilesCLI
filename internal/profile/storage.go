@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Save(name string, p Profile) error {
+func Save(name string, p ProfileData) error {
 	data, err := yaml.Marshal(p)
 	if err != nil {
 		return err
@@ -22,32 +22,32 @@ func Save(name string, p Profile) error {
 	return nil
 }
 
-func Load(name string) (Profile, error) {
+func Load(name string) (ProfileData, error) {
 	nameFile := getFileName(name)
 	data, err := os.ReadFile(nameFile)
 	if err != nil {
-		return Profile{}, err
+		return ProfileData{}, err
 	}
-	p := Profile{}
+	p := ProfileData{}
 	err = yaml.Unmarshal(data, &p)
 	if err != nil {
-		return Profile{}, err
+		return ProfileData{}, err
 	}
 	return p, nil
 }
 
 var ErrNotYaml = errors.New("the file is not a yaml")
 
-func SearchAll(path string, mode FileStructure) ([]string, []Profile, error) {
+func SearchAll(path string, mode FileStructure) ([]string, []ProfileData, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		return []string{}, []Profile{}, err
+		return []string{}, []ProfileData{}, err
 	}
 
 	shouldInclude := getProfileFilter(mode)
 
 	profileNames := make([]string, 0, len(dirEntry))
-	profiles := make([]Profile, 0, len(dirEntry))
+	profiles := make([]ProfileData, 0, len(dirEntry))
 
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
@@ -130,20 +130,20 @@ const (
 	All
 )
 
-func validateFileStructure(path string) (FileStructure, Profile, error) {
+func validateFileStructure(path string) (FileStructure, ProfileData, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return All, Profile{}, err
+		return All, ProfileData{}, err
 	}
 	decoderKnown := yaml.NewDecoder(bytes.NewReader(data))
 	decoderKnown.KnownFields(true)
 	decoderUnknown := yaml.NewDecoder(bytes.NewReader(data))
 	decoderUnknown.KnownFields(false)
 
-	var p Profile
+	var p ProfileData
 
 	if decoderUnknown.Decode(&p) != nil {
-		return All, Profile{}, nil
+		return All, ProfileData{}, nil
 	}
 	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
 		return All, p, nil

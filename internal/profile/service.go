@@ -23,7 +23,7 @@ func Create(name, user, project string) error {
 	if exist {
 		return fmt.Errorf("profile %q already exists", name)
 	}
-	p := Profile{
+	p := ProfileData{
 		User:    user,
 		Project: project,
 	}
@@ -50,7 +50,7 @@ func Update(name, user, project string) error {
 	if !exist {
 		return fmt.Errorf("profile %q not exists", name)
 	}
-	p := Profile{
+	p := ProfileData{
 		User:    user,
 		Project: project,
 	}
