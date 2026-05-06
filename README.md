@@ -2,7 +2,7 @@
 
 `ProfilesCLI` is a small command-line utility for working with profiles stored as YAML files in the current directory.
 
-CLI написан как тестовое задание для поступления на кафедру облачных технологий МФТИ. При его выполнении использовалась LLM: в первую очередь для знакомства с языком, так как на старте в опыте автора было 0 написанных на Go строк кода, ещё для генерации файловой структуры модуля и на финальных стадиях для всесторонней проверки модуля, а также написания README и help.
+CLI написан как тестовое задание для поступления на кафедру облачных технологий МФТИ. При его выполнении использовалась LLM: в первую очередь для знакомства с языком, так как на старте в опыте автора было 0 написанных на Go строк кода, ещё для генерации файловой структуры модуля и на финальных стадиях для всесторонней проверки и написания тестов, а также README и help.
 
 The executable is called `mws`. It supports creating, reading, listing and deleting profiles.
 
@@ -52,6 +52,8 @@ Or add `$(go env GOPATH)/bin` to your `PATH`.
 ```bash
 git clone https://github.com/hamajun504/ProfilesCLI.git
 cd ProfilesCLI
+go test ./...
+go vet ./...
 go build -o mws ./cmd/mws
 ```
 
@@ -298,32 +300,6 @@ Check test coverage:
 
 ```bash
 go test -cover ./...
-```
-
-## Development
-
-Format code:
-
-```bash
-go fmt ./...
-```
-
-Run tests:
-
-```bash
-go test ./...
-```
-
-Build:
-
-```bash
-go build -o mws ./cmd/mws
-```
-
-Run locally:
-
-```bash
-./mws help
 ```
 
 ## Notes
