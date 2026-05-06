@@ -3,6 +3,7 @@ package profile
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -10,44 +11,42 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func Save(name string, p ProfileData) error {
-	data, err := yaml.Marshal(p)
+func Save(p Profile) error {
+	data, err := yaml.Marshal(p.Data)
 	if err != nil {
 		return err
 	}
-	nameFile := getFileName(name)
+	nameFile := getFileName(p.Name)
 	if err = os.WriteFile(nameFile, data, 0o644); err != nil {
 		return err
 	}
 	return nil
 }
 
-func Load(name string) (ProfileData, error) {
-	nameFile := getFileName(name)
-	data, err := os.ReadFile(nameFile)
+func Load(name string) (Profile, error) {
+	data, err := os.ReadFile(getFileName(name))
 	if err != nil {
-		return ProfileData{}, err
+		return Profile{}, err
 	}
-	p := ProfileData{}
-	err = yaml.Unmarshal(data, &p)
+	p := NewDefaultProfile(name)
+	err = yaml.Unmarshal(data, &p.Data)
 	if err != nil {
-		return ProfileData{}, err
+		return Profile{}, err
 	}
 	return p, nil
 }
 
 var ErrNotYaml = errors.New("the file is not a yaml")
 
-func SearchAll(path string, mode FileStructure) ([]string, []ProfileData, error) {
+func SearchAll(path string, mode FileStructure) ([]Profile, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		return []string{}, []ProfileData{}, err
+		return []Profile{}, err
 	}
 
 	shouldInclude := getProfileFilter(mode)
 
-	profileNames := make([]string, 0, len(dirEntry))
-	profiles := make([]ProfileData, 0, len(dirEntry))
+	profiles := make([]Profile, 0, len(dirEntry))
 
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
@@ -55,18 +54,18 @@ func SearchAll(path string, mode FileStructure) ([]string, []ProfileData, error)
 			if errors.Is(err, ErrNotYaml) {
 				continue
 			}
-			return profileNames, profiles, err
+			return profiles, err
 		}
-		struc, prof, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()))
+		prof := NewDefaultProfile(name)
+		struc, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()), &prof)
 		if err != nil {
-			return profileNames, profiles, err
+			return profiles, err
 		}
 		if shouldInclude(struc) {
-			profileNames = append(profileNames, name)
 			profiles = append(profiles, prof)
 		}
 	}
-	return profileNames, profiles, nil
+	return profiles, nil
 }
 
 func getProfileFilter(mode FileStructure) func(FileStructure) bool {
@@ -130,27 +129,29 @@ const (
 	All
 )
 
-func validateFileStructure(path string) (FileStructure, ProfileData, error) {
+func validateFileStructure(path string, p *Profile) (FileStructure, error) {
+	if p == nil {
+		return All, fmt.Errorf("profile is nil")
+	}
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return All, ProfileData{}, err
+		return All, err
 	}
 	decoderKnown := yaml.NewDecoder(bytes.NewReader(data))
 	decoderKnown.KnownFields(true)
 	decoderUnknown := yaml.NewDecoder(bytes.NewReader(data))
 	decoderUnknown.KnownFields(false)
 
-	var p ProfileData
-
-	if decoderUnknown.Decode(&p) != nil {
-		return All, ProfileData{}, nil
+	if decoderUnknown.Decode(&p.Data) != nil {
+		return All, nil
 	}
-	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
-		return All, p, nil
+	if validateUser(p.Data.User) != nil || validateProject(p.Data.Project) != nil {
+		return All, nil
 	}
-	pExtra := p
-	if decoderKnown.Decode(&p) != nil {
-		return ValidOrExtended, pExtra, nil
+	pExtra := *p
+	if decoderKnown.Decode(&p.Data) != nil {
+		*p = pExtra
+		return ValidOrExtended, nil
 	}
-	return Valid, p, nil
+	return Valid, nil
 }

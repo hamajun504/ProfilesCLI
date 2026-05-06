@@ -1,5 +1,12 @@
 package cli
 
+import "fmt"
+
+func printHelp() error {
+	_, err := fmt.Println(helpMessage)
+	return err
+}
+
 var helpMessage string = `mws profile - CLI for profiles managing
 Usage:
   mws <command> [arguments]

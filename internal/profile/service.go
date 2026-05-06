@@ -23,11 +23,8 @@ func Create(name, user, project string) error {
 	if exist {
 		return fmt.Errorf("profile %q already exists", name)
 	}
-	p := ProfileData{
-		User:    user,
-		Project: project,
-	}
-	if err := Save(name, p); err != nil {
+	p := NewProfile(name, user, project)
+	if err := Save(p); err != nil {
 		return err
 	}
 	return nil
@@ -50,41 +47,30 @@ func Update(name, user, project string) error {
 	if !exist {
 		return fmt.Errorf("profile %q not exists", name)
 	}
-	p := ProfileData{
-		User:    user,
-		Project: project,
-	}
-	if err := Save(name, p); err != nil {
+	p := NewProfile(name, user, project)
+	if err := Save(p); err != nil {
 		return err
 	}
 	return nil
 }
 
-func Get(name string) (string, string, error) {
+func Get(name string) (Profile, error) {
 	if err := validateOldName(name); err != nil {
-		return "", "", err
+		return Profile{}, err
 	}
 	p, err := Load(name)
 	if err != nil {
-		return "", "", err
+		return Profile{}, err
 	}
-	return p.User, p.Project, nil
+	return p, nil
 }
 
-func List(mode FileStructure) ([]string, []string, []string, error) {
-	profileNames, profiles, err := SearchAll(".", mode)
+func List(mode FileStructure) ([]Profile, error) {
+	profiles, err := SearchAll(".", mode)
 	if err != nil {
-		return []string{}, []string{}, []string{}, err
+		return []Profile{}, err
 	}
-	users := make([]string, 0, len(profileNames))
-	projects := make([]string, 0, len(profileNames))
-
-	for i := range profileNames {
-		users = append(users, profiles[i].User)
-		projects = append(projects, profiles[i].Project)
-	}
-
-	return profileNames, users, projects, nil
+	return profiles, nil
 }
 
 func Delete(name string) error {

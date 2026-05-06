@@ -57,35 +57,33 @@ func runProfile(args []string) error {
 		}
 
 	case "get":
-		user, project, err := profile.Get(*name)
+		p, err := profile.Get(*name)
 		if err != nil {
 			return err
 		}
-		if err := printGetOutput(*name, user, project); err != nil {
+		if err := printGetOutput(p); err != nil {
 			return err
 		}
 
 	case "list":
 		var err error
-		var profilesNames []string
-		var users []string
-		var projects []string
+		var profiles []profile.Profile
 		if *allFiles {
-			profilesNames, users, projects, err = profile.List(profile.All)
+			profiles, err = profile.List(profile.All)
 		} else if *extendedFiles {
-			profilesNames, users, projects, err = profile.List(profile.ValidOrExtended)
+			profiles, err = profile.List(profile.ValidOrExtended)
 		} else {
-			profilesNames, users, projects, err = profile.List(profile.Valid)
+			profiles, err = profile.List(profile.Valid)
 		}
 		if err != nil {
 			return err
 		}
 		if *longOutput {
-			if err := printProfilesDetails(profilesNames, users, projects); err != nil {
+			if err := printProfilesDetails(profiles); err != nil {
 				return err
 			}
 		} else {
-			if err := printProfilesShortly(profilesNames); err != nil {
+			if err := printProfilesShortly(profiles); err != nil {
 				return err
 			}
 		}
@@ -114,9 +112,9 @@ func runProfile(args []string) error {
 	return nil
 }
 
-func printProfilesShortly(profiles []string) error {
-	for _, name := range profiles {
-		_, err := fmt.Println(name)
+func printProfilesShortly(profiles []profile.Profile) error {
+	for _, p := range profiles {
+		_, err := fmt.Println(p.Name)
 		if err != nil {
 			return err
 		}
@@ -124,15 +122,12 @@ func printProfilesShortly(profiles []string) error {
 	return nil
 }
 
-func printProfilesDetails(names, users, projects []string) error {
-	if len(names) != len(users) || len(users) != len(projects) {
-		return fmt.Errorf("lengths of names, users and projects are not equal")
-	}
+func printProfilesDetails(profiles []profile.Profile) error {
 	var namesMaxLen, usersMaxLen, projectsMaxLen int
-	for i := range names {
-		namesMaxLen = max(namesMaxLen, len(names[i]))
-		usersMaxLen = max(usersMaxLen, len(users[i]))
-		projectsMaxLen = max(projectsMaxLen, len(projects[i]))
+	for i := range profiles {
+		namesMaxLen = max(namesMaxLen, len(profiles[i].Name))
+		usersMaxLen = max(usersMaxLen, len(profiles[i].Data.User))
+		projectsMaxLen = max(projectsMaxLen, len(profiles[i].Data.Project))
 	}
 	namesMaxLen = max(namesMaxLen, len("/name/"))
 	usersMaxLen = max(usersMaxLen, len("/user/"))
@@ -142,8 +137,8 @@ func printProfilesDetails(names, users, projects []string) error {
 		fmt.Println(header)
 		//fmt.Println(strings.Repeat("_", len(header)))
 	}
-	for i := range names {
-		_, err := fmt.Println(formLineProfilesDetails(names[i], users[i], projects[i], namesMaxLen, usersMaxLen, projectsMaxLen))
+	for i := range profiles {
+		_, err := fmt.Println(formLineProfilesDetails(profiles[i].Name, profiles[i].Data.User, profiles[i].Data.Project, namesMaxLen, usersMaxLen, projectsMaxLen))
 		if err != nil {
 			return err
 		}
@@ -158,15 +153,10 @@ func formLineProfilesDetails(name, user, project string, widthName, widthUser, w
 	return nameField + userField + projectField
 }
 
-func printHelp() error {
-	_, err := fmt.Println(helpMessage)
-	return err
-}
-
-func printGetOutput(name, user, project string) error {
-	output := "profile:  " + name + "\n" +
-		"user   :  " + user + "\n" +
-		"project:  " + project
+func printGetOutput(p profile.Profile) error {
+	output := "profile:  " + p.Name + "\n" +
+		"user   :  " + p.Data.User + "\n" +
+		"project:  " + p.Data.Project
 	_, err := fmt.Println(output)
 	return err
 }
