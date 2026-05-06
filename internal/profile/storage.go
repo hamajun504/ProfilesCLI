@@ -41,7 +41,7 @@ var ErrNotYaml = errors.New("the file is not a yaml")
 func SearchAll(path string, mode FileStructure) ([]Profile, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
-		return []Profile{}, err
+		return nil, err
 	}
 
 	shouldInclude := getProfileFilter(mode)
