@@ -1,5 +1,7 @@
 package profile
 
+import "fmt"
+
 func Create(name, user, project string) error {
 	if err := validateNewName(name); err != nil {
 		return err
@@ -10,7 +12,40 @@ func Create(name, user, project string) error {
 	if err := validateProject(project); err != nil {
 		return err
 	}
+	exist, err := Exist(name)
+	if err != nil {
+		return err
+	}
+	if exist {
+		return fmt.Errorf("profile %q already exists", name)
+	}
+	p := Profile{
+		User:    user,
+		Project: project,
+	}
+	if err := Save(name, p); err != nil {
+		return err
+	}
+	return nil
+}
 
+func Update(name, user, project string) error {
+	if err := validateNewName(name); err != nil {
+		return err
+	}
+	if err := validateUser(user); err != nil {
+		return err
+	}
+	if err := validateProject(project); err != nil {
+		return err
+	}
+	exist, err := Exist(name)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return fmt.Errorf("profile %q not exists", name)
+	}
 	p := Profile{
 		User:    user,
 		Project: project,
