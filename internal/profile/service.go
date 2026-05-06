@@ -23,7 +23,7 @@ func Create(name, user, project string) error {
 	if exist {
 		return fmt.Errorf("profile %q already exists", name)
 	}
-	p := NewProfile(name, user, project)
+	p := newProfile(name, user, project)
 	if err := Save(p); err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func Update(name, user, project string) error {
 	if !exist {
 		return fmt.Errorf("profile %q not exists", name)
 	}
-	p := NewProfile(name, user, project)
+	p := newProfile(name, user, project)
 	if err := Save(p); err != nil {
 		return err
 	}

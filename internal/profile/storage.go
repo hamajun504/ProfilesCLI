@@ -28,7 +28,7 @@ func Load(name string) (Profile, error) {
 	if err != nil {
 		return Profile{}, err
 	}
-	p := NewDefaultProfile(name)
+	p := newDefaultProfile(name)
 	err = yaml.Unmarshal(data, &p.Data)
 	if err != nil {
 		return Profile{}, err
@@ -56,7 +56,7 @@ func SearchAll(path string, mode FileStructure) ([]Profile, error) {
 			}
 			return profiles, err
 		}
-		prof := NewDefaultProfile(name)
+		prof := newDefaultProfile(name)
 		struc, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()), &prof)
 		if err != nil {
 			return profiles, err
@@ -106,7 +106,6 @@ func Remove(name string) error {
 		return err
 	}
 	return nil
-
 }
 
 func Exist(name string) (bool, error) {

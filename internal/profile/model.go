@@ -12,7 +12,7 @@ type Profile struct {
 	Data ProfileData
 }
 
-func NewProfile(name, user, project string) Profile {
+func newProfile(name, user, project string) Profile {
 	return Profile{
 		Name: name,
 		Data: ProfileData{
@@ -21,7 +21,7 @@ func NewProfile(name, user, project string) Profile {
 		},
 	}
 }
-func NewDefaultProfile(name string) Profile {
+func newDefaultProfile(name string) Profile {
 	return Profile{
 		Name: name,
 		Data: ProfileData{},
