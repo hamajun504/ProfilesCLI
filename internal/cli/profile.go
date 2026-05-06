@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/hamajun504/ProfilesCLI/internal/profile"
 )
@@ -170,13 +171,13 @@ func printProfilesShortly(profiles []profile.Profile) error {
 func printProfilesDetails(profiles []profile.Profile) error {
 	var namesMaxLen, usersMaxLen, projectsMaxLen int
 	for i := range profiles {
-		namesMaxLen = max(namesMaxLen, len(profiles[i].Name))
-		usersMaxLen = max(usersMaxLen, len(profiles[i].Data.User))
-		projectsMaxLen = max(projectsMaxLen, len(profiles[i].Data.Project))
+		namesMaxLen = max(namesMaxLen, utf8.RuneCountInString(profiles[i].Name))
+		usersMaxLen = max(usersMaxLen, utf8.RuneCountInString(profiles[i].Data.User))
+		projectsMaxLen = max(projectsMaxLen, utf8.RuneCountInString(profiles[i].Data.Project))
 	}
-	namesMaxLen = max(namesMaxLen, len("/name/"))
-	usersMaxLen = max(usersMaxLen, len("/user/"))
-	projectsMaxLen = max(projectsMaxLen, len("/project/"))
+	namesMaxLen = max(namesMaxLen, utf8.RuneCountInString("/name/"))
+	usersMaxLen = max(usersMaxLen, utf8.RuneCountInString("/user/"))
+	projectsMaxLen = max(projectsMaxLen, utf8.RuneCountInString("/project/"))
 	{
 		header := formLineProfilesDetails("/name/", "/user/", "/project/", namesMaxLen, usersMaxLen, projectsMaxLen)
 		fmt.Println(header)
