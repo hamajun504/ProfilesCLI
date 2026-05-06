@@ -2,8 +2,10 @@ package cli
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -168,8 +170,12 @@ func askToOverwrite(name string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	answer, _ := reader.ReadString('\n')
-	// err != nil means input ended not with \n, thats acceptable
+	answer, err := reader.ReadString('\n')
+	if err != nil {
+		if !errors.Is(err, io.EOF) {
+			return false, err
+		}
+	}
 
 	answer = strings.TrimSpace(strings.ToLower(answer))
 
