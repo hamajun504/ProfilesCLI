@@ -77,9 +77,6 @@ func runProfileGet(args []string) error {
 	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
 
 	name := fs.String("name", "", "profile name")
-	forceOverwrite := false
-	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
-	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
 
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -101,9 +98,6 @@ func runProfileList(args []string) error {
 	extendedFiles := fs.Bool("e", false, "output files with extra fields")
 	allFiles := fs.Bool("a", false, "output all yaml-files")
 	longOutput := fs.Bool("l", false, "detailed output")
-	forceOverwrite := false
-	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
-	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
 
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -135,11 +129,7 @@ func runProfileList(args []string) error {
 
 func runProfileDelete(args []string) error {
 	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
-
 	name := fs.String("name", "", "profile name")
-	forceOverwrite := false
-	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
-	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
 
 	if err := fs.Parse(args); err != nil {
 		return err
