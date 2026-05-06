@@ -94,7 +94,7 @@ func Delete(name string) error {
 }
 
 func Exists(name string) (bool, error) {
-	if err := validateNewName(name); err != nil {
+	if err := validateOldName(name); err != nil {
 		return false, err
 	}
 
