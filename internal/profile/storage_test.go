@@ -9,7 +9,19 @@ import (
 )
 
 func TestSaveLoadAndCreatesYAMLFile(t *testing.T) {
-	t.Chdir(t.TempDir())
+	tmpDir := t.TempDir()
+	oldWd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	t.Cleanup(func() {
+		if chdirErr := os.Chdir(oldWd); chdirErr != nil {
+			t.Fatalf("restore working directory: %v", chdirErr)
+		}
+	})
+	if err = os.Chdir(tmpDir); err != nil {
+		t.Fatalf("change working directory to temp dir %q: %v", tmpDir, err)
+	}
 
 	expected := newProfile("p1", "u1", "pr1")
 	if err := Save(expected); err != nil {
