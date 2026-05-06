@@ -69,7 +69,7 @@ func Get(name string) (Profile, error) {
 func List(mode FileStructure) ([]Profile, error) {
 	profiles, err := SearchAll(".", mode)
 	if err != nil {
-		return profiles, err
+		return nil, err
 	}
 
 	sort.Slice(profiles, func(i, j int) bool {
