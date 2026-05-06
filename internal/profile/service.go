@@ -17,7 +17,7 @@ func Create(name, user, project string) error {
 	if err := validateProject(project); err != nil {
 		return err
 	}
-	exist, err := Exist(name)
+	exist, err := Exists(name)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func Update(name, user, project string) error {
 	if err := validateProject(project); err != nil {
 		return err
 	}
-	exist, err := Exist(name)
+	exist, err := Exists(name)
 	if err != nil {
 		return err
 	}

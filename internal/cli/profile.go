@@ -48,7 +48,7 @@ func runProfileCreate(args []string) error {
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
-	exist, err := profile.Exist(*name)
+	exist, err := profile.Exists(*name)
 	if err != nil {
 		return err
 	}
