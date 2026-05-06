@@ -42,6 +42,7 @@ func runProfile(args []string) error {
 			if err := profile.Create(*name, *user, *project); err != nil {
 				return err
 			}
+			return nil
 		}
 		if !forceOverwrite {
 			ow, err := askToOverwrite(*name)
