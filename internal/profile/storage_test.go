@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"sort"
 	"testing"
 )
 
@@ -266,7 +265,7 @@ func TestSearchAll_FilterModesAndIgnoreNonYAML(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SearchAll(Valid): %v", err)
 		}
-		assertProfileNamesStorage(t, got, []string{"ok"})
+		assertProfileNames(t, got, []string{"ok"}, true)
 	})
 
 	t.Run("ValidOrExtended returns ok and extended", func(t *testing.T) {
@@ -274,7 +273,7 @@ func TestSearchAll_FilterModesAndIgnoreNonYAML(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SearchAll(ValidOrExtended): %v", err)
 		}
-		assertProfileNamesStorage(t, got, []string{"extended", "ok"})
+		assertProfileNames(t, got, []string{"extended", "ok"}, true)
 	})
 
 	t.Run("All returns all YAML including invalid", func(t *testing.T) {
@@ -282,27 +281,6 @@ func TestSearchAll_FilterModesAndIgnoreNonYAML(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SearchAll(All): %v", err)
 		}
-		assertProfileNamesStorage(t, got, []string{"bad", "extended", "ok"})
+		assertProfileNames(t, got, []string{"bad", "extended", "ok"}, true)
 	})
-}
-
-func assertProfileNamesStorage(t *testing.T, got []Profile, want []string) {
-	t.Helper()
-
-	gotNames := make([]string, 0, len(got))
-	for _, p := range got {
-		gotNames = append(gotNames, p.Name)
-	}
-
-	sort.Strings(gotNames)
-	sort.Strings(want)
-
-	if len(gotNames) != len(want) {
-		t.Fatalf("len(names) = %d, want %d (got %v)", len(gotNames), len(want), gotNames)
-	}
-	for i := range want {
-		if gotNames[i] != want[i] {
-			t.Fatalf("names[%d] = %q, want %q (all names: %v)", i, gotNames[i], want[i], gotNames)
-		}
-	}
 }

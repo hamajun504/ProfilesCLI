@@ -4,7 +4,6 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
 )
@@ -210,7 +209,7 @@ func TestSearchAllFiltersByMode(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SearchAll Valid returned error: %v", err)
 		}
-		assertProfileNames(t, profiles, []string{"ok"})
+		assertProfileNames(t, profiles, []string{"ok"}, false)
 	})
 
 	t.Run("valid or extended", func(t *testing.T) {
@@ -218,7 +217,7 @@ func TestSearchAllFiltersByMode(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SearchAll ValidOrExtended returned error: %v", err)
 		}
-		assertProfileNames(t, profiles, []string{"extended", "invalid_field", "ok"})
+		assertProfileNames(t, profiles, []string{"extended", "invalid_field", "ok"}, false)
 	})
 
 	t.Run("all yaml profiles", func(t *testing.T) {
@@ -226,7 +225,7 @@ func TestSearchAllFiltersByMode(t *testing.T) {
 		if err != nil {
 			t.Fatalf("SearchAll All returned error: %v", err)
 		}
-		assertProfileNames(t, profiles, []string{"extended", "invalid", "invalid_field", "ok"})
+		assertProfileNames(t, profiles, []string{"extended", "invalid", "invalid_field", "ok"}, false)
 	})
 }
 
@@ -265,16 +264,5 @@ func TestListReturnsSortedByName(t *testing.T) {
 		t.Fatalf("List returned error: %v", err)
 	}
 
-	assertProfileNames(t, profiles, []string{"alpha", "beta", "zeta"})
-}
-
-func assertProfileNames(t *testing.T, profiles []Profile, expected []string) {
-	t.Helper()
-	actual := make([]string, 0, len(profiles))
-	for _, p := range profiles {
-		actual = append(actual, p.Name)
-	}
-	if !reflect.DeepEqual(actual, expected) {
-		t.Fatalf("unexpected names: got %v, want %v", actual, expected)
-	}
+	assertProfileNames(t, profiles, []string{"alpha", "beta", "zeta"}, false)
 }
