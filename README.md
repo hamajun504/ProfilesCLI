@@ -2,6 +2,12 @@
 
 `ProfilesCLI` is a small command-line utility for working with profiles stored as YAML files in the current directory.
 
+CLI написан как тестовое задание для поступление на кафедру облачных технологий МФТИ.
+При его выполнении использовалась LLM:
+в первую очередь для знакомства с языком, так как на старте в опыте автора было 0 написанных на Go строк кода,
+ещё для генерации файловой структуры модуля,
+и для всесторонней проверки модуля на финальных стадиях.
+
 The executable is called `mws`. It supports creating, reading, listing and deleting profiles.
 
 Each profile is stored as a separate YAML file. The profile name corresponds to the file name.
@@ -18,6 +24,8 @@ with content:
 user: example
 project: new-project
 ```
+
+
 
 ## Requirements
 
