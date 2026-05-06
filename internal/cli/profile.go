@@ -174,9 +174,9 @@ func printProfilesDetails(profiles []profile.Profile) error {
 }
 
 func formLineProfilesDetails(name, user, project string, widthName, widthUser, widthProject int) string {
-	nameField := name + strings.Repeat(" ", widthName-len(name)) + "  |"
-	userField := "  " + user + strings.Repeat(" ", widthUser-len(user)) + "  |"
-	projectField := "  " + project + strings.Repeat(" ", widthProject-len(project))
+	nameField := name + strings.Repeat(" ", widthName-utf8.RuneCountInString(name)) + "  |"
+	userField := "  " + user + strings.Repeat(" ", widthUser-utf8.RuneCountInString(user)) + "  |"
+	projectField := "  " + project + strings.Repeat(" ", widthProject-utf8.RuneCountInString(project))
 	return nameField + userField + projectField
 }
 
