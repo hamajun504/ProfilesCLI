@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 )
 
 func Create(name, user, project string) error {
@@ -70,6 +71,11 @@ func List(mode FileStructure) ([]Profile, error) {
 	if err != nil {
 		return []Profile{}, err
 	}
+
+	sort.Slice(profiles, func(i, j int) bool {
+		return profiles[i].Name < profiles[j].Name
+	})
+
 	return profiles, nil
 }
 
