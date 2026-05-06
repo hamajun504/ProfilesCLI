@@ -71,18 +71,8 @@ func Get(name string) (string, string, error) {
 	return p.User, p.Project, nil
 }
 
-func List(flag FileStructure) ([]string, []string, []string, error) {
-	var err error
-	var profileNames []string
-	var profiles []Profile
-	switch flag {
-	case Valid:
-		profileNames, profiles, err = SearchAllCorrect(".")
-	case ValidOrExtended:
-		profileNames, profiles, err = SearchAllExtended(".")
-	default:
-		profileNames, profiles, err = SearchAll(".")
-	}
+func List(mode FileStructure) ([]string, []string, []string, error) {
+	profileNames, profiles, err := SearchAll(".", mode)
 	if err != nil {
 		return []string{}, []string{}, []string{}, err
 	}

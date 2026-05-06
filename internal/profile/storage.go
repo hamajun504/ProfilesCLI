@@ -38,42 +38,17 @@ func Load(name string) (Profile, error) {
 
 var ErrNotYaml = errors.New("the file is not a yaml")
 
-func SearchAllCorrect(path string) ([]string, []Profile, error) {
+func SearchAll(path string, mode FileStructure) ([]string, []Profile, error) {
 	dirEntry, err := os.ReadDir(path)
 	if err != nil {
 		return []string{}, []Profile{}, err
 	}
+
+	shouldInclude := getProfileFilter(mode)
+
 	profileNames := make([]string, 0, len(dirEntry))
 	profiles := make([]Profile, 0, len(dirEntry))
-	for i := range dirEntry {
-		name, err := getProfileName(dirEntry[i].Name())
-		if err != nil {
-			if errors.Is(err, ErrNotYaml) {
-				continue
-			}
-			return profileNames, profiles, err
-		}
 
-		struc, prof, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()))
-		if err != nil {
-			return profileNames, profiles, err
-		}
-		if struc == Valid {
-			profileNames = append(profileNames, name)
-			profiles = append(profiles, prof)
-		}
-
-	}
-	return profileNames, profiles, nil
-}
-
-func SearchAllExtended(path string) ([]string, []Profile, error) {
-	dirEntry, err := os.ReadDir(path)
-	if err != nil {
-		return []string{}, []Profile{}, err
-	}
-	profileNames := make([]string, 0, len(dirEntry))
-	profiles := make([]Profile, 0, len(dirEntry))
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
 		if err != nil {
@@ -86,37 +61,31 @@ func SearchAllExtended(path string) ([]string, []Profile, error) {
 		if err != nil {
 			return profileNames, profiles, err
 		}
-		if struc == Valid || struc == ValidOrExtended {
+		if shouldInclude(struc) {
 			profileNames = append(profileNames, name)
 			profiles = append(profiles, prof)
 		}
 	}
-	return profileNames, profiles, err
+	return profileNames, profiles, nil
 }
 
-func SearchAll(path string) ([]string, []Profile, error) {
-	dirEntry, err := os.ReadDir(path)
-	if err != nil {
-		return []string{}, []Profile{}, err
-	}
-	profileNames := make([]string, 0, len(dirEntry))
-	profiles := make([]Profile, 0, len(dirEntry))
-	for i := range dirEntry {
-		name, err := getProfileName(dirEntry[i].Name())
-		if err != nil {
-			if errors.Is(err, ErrNotYaml) {
-				continue
-			}
-			return profileNames, profiles, err
+func getProfileFilter(mode FileStructure) func(FileStructure) bool {
+	switch mode {
+	case Valid:
+		return func(struc FileStructure) bool {
+			return struc == Valid
 		}
-		_, prof, err := validateFileStructure(filepath.Join(path, dirEntry[i].Name()))
-		if err != nil {
-			return profileNames, profiles, err
+
+	case ValidOrExtended:
+		return func(struc FileStructure) bool {
+			return struc == Valid || struc == ValidOrExtended
 		}
-		profiles = append(profiles, prof)
-		profileNames = append(profileNames, name)
+
+	default:
+		return func(struc FileStructure) bool {
+			return true
+		}
 	}
-	return profileNames, profiles, nil
 }
 
 func getProfileName(fileName string) (string, error) {
