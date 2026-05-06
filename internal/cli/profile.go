@@ -71,11 +71,11 @@ func runProfile(args []string) error {
 		var users []string
 		var projects []string
 		if *allFiles {
-			profilesNames, users, projects, err = profile.List(profile.Invalid)
+			profilesNames, users, projects, err = profile.List(profile.All)
 		} else if *extendedFiles {
-			profilesNames, users, projects, err = profile.List(profile.ExtraFields)
+			profilesNames, users, projects, err = profile.List(profile.ValidOrExtended)
 		} else {
-			profilesNames, users, projects, err = profile.List(profile.Ok)
+			profilesNames, users, projects, err = profile.List(profile.Valid)
 		}
 		if err != nil {
 			return err

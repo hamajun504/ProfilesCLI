@@ -76,9 +76,9 @@ func List(flag FileStructure) ([]string, []string, []string, error) {
 	var profileNames []string
 	var profiles []Profile
 	switch flag {
-	case Ok:
+	case Valid:
 		profileNames, profiles, err = SearchAllCorrect(".")
-	case ExtraFields:
+	case ValidOrExtended:
 		profileNames, profiles, err = SearchAllExtended(".")
 	default:
 		profileNames, profiles, err = SearchAll(".")

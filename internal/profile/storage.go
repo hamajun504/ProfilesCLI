@@ -58,7 +58,7 @@ func SearchAllCorrect(path string) ([]string, []Profile, error) {
 		if err != nil {
 			return profileNames, profiles, err
 		}
-		if struc == Ok {
+		if struc == Valid {
 			profileNames = append(profileNames, name)
 			profiles = append(profiles, prof)
 		}
@@ -86,7 +86,7 @@ func SearchAllExtended(path string) ([]string, []Profile, error) {
 		if err != nil {
 			return profileNames, profiles, err
 		}
-		if struc == Ok || struc == ExtraFields {
+		if struc == Valid || struc == ValidOrExtended {
 			profileNames = append(profileNames, name)
 			profiles = append(profiles, prof)
 		}
@@ -156,15 +156,15 @@ func Exist(name string) (bool, error) {
 type FileStructure int
 
 const (
-	Ok FileStructure = iota
-	Invalid
-	ExtraFields
+	Valid FileStructure = iota
+	ValidOrExtended
+	All
 )
 
 func validateFileStructure(path string) (FileStructure, Profile, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return Invalid, Profile{}, err
+		return All, Profile{}, err
 	}
 	decoderKnown := yaml.NewDecoder(bytes.NewReader(data))
 	decoderKnown.KnownFields(true)
@@ -174,14 +174,14 @@ func validateFileStructure(path string) (FileStructure, Profile, error) {
 	var p Profile
 
 	if decoderUnknown.Decode(&p) != nil {
-		return Invalid, Profile{}, nil
+		return All, Profile{}, nil
 	}
 	if validateUser(p.User) != nil || validateProject(p.Project) != nil {
-		return Invalid, p, nil
+		return All, p, nil
 	}
 	pExtra := p
 	if decoderKnown.Decode(&p) != nil {
-		return ExtraFields, pExtra, nil
+		return ValidOrExtended, pExtra, nil
 	}
-	return Ok, p, nil
+	return Valid, p, nil
 }
