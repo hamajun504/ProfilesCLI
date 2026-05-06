@@ -2,11 +2,7 @@
 
 `ProfilesCLI` is a small command-line utility for working with profiles stored as YAML files in the current directory.
 
-CLI написан как тестовое задание для поступление на кафедру облачных технологий МФТИ.
-При его выполнении использовалась LLM:
-в первую очередь для знакомства с языком, так как на старте в опыте автора было 0 написанных на Go строк кода,
-ещё для генерации файловой структуры модуля
-и на финальных стадиях для всесторонней проверки модуля, а также написания README и help.
+CLI написан как тестовое задание для поступления на кафедру облачных технологий МФТИ. При его выполнении использовалась LLM: в первую очередь для знакомства с языком, так как на старте в опыте автора было 0 написанных на Go строк кода, ещё для генерации файловой структуры модуля и на финальных стадиях для всесторонней проверки модуля, а также написания README и help.
 
 The executable is called `mws`. It supports creating, reading, listing and deleting profiles.
 
@@ -24,8 +20,6 @@ with content:
 user: example
 project: new-project
 ```
-
-
 
 ## Requirements
 
@@ -91,7 +85,7 @@ mws help
 Creates a new profile in the current directory.
 
 ```bash
-mws profile create --name=<name> --user=<user> --project=<project>
+mws profile create --name=NAME --user=USER --project=PROJECT
 ```
 
 Example:
@@ -132,7 +126,7 @@ mws profile create --name=test --user=example --project=new-project -f
 Shows profile content by name.
 
 ```bash
-mws profile get --name=<name>
+mws profile get --name=NAME
 ```
 
 Example:
@@ -181,7 +175,7 @@ mws profile list -a
 Deletes a profile by name.
 
 ```bash
-mws profile delete --name=<name>
+mws profile delete --name=NAME
 ```
 
 Example:
@@ -272,6 +266,64 @@ Delete a profile:
 
 ```bash
 mws profile delete --name=dev
+```
+
+## Testing
+
+Run all tests:
+
+```bash
+go test ./...
+```
+
+Run tests for the profile package only:
+
+```bash
+go test ./internal/profile
+```
+
+Run tests with verbose output:
+
+```bash
+go test -v ./...
+```
+
+Run a specific test:
+
+```bash
+go test ./internal/profile -run TestName
+```
+
+Check test coverage:
+
+```bash
+go test -cover ./...
+```
+
+## Development
+
+Format code:
+
+```bash
+go fmt ./...
+```
+
+Run tests:
+
+```bash
+go test ./...
+```
+
+Build:
+
+```bash
+go build -o mws ./cmd/mws
+```
+
+Run locally:
+
+```bash
+./mws help
 ```
 
 ## Notes
