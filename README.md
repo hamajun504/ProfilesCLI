@@ -156,7 +156,7 @@ By default, only valid profile files are shown.
 Available list modes:
 
 ```text
--l    Show only valid profiles
+-l    Show detailed profile list with name, user and project
 -e    Show valid profiles and profiles with extra YAML fields
 -a    Show all YAML profile files, including invalid ones
 ```
