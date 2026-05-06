@@ -270,38 +270,6 @@ Delete a profile:
 mws profile delete --name=dev
 ```
 
-## Testing
-
-Run all tests:
-
-```bash
-go test ./...
-```
-
-Run tests for the profile package only:
-
-```bash
-go test ./internal/profile
-```
-
-Run tests with verbose output:
-
-```bash
-go test -v ./...
-```
-
-Run a specific test:
-
-```bash
-go test ./internal/profile -run TestName
-```
-
-Check test coverage:
-
-```bash
-go test -cover ./...
-```
-
 ## Notes
 
 All profile operations are performed in the current working directory.
