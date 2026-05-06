@@ -13,11 +13,90 @@ import (
 )
 
 func runProfile(args []string) error {
+	if len(args) == 0 {
+		printHelp()
+		return nil
+	}
+
+	switch args[0] {
+	case "create":
+		return runProfileCreate(args[1:])
+	case "get":
+		return runProfileGet(args[1:])
+	case "list":
+		return runProfileList(args[1:])
+	case "delete":
+		return runProfileDelete(args[1:])
+	case "help":
+		return printHelp()
+	default:
+		return fmt.Errorf("unknown profile command: %s", args[0])
+	}
+}
+
+func runProfileCreate(args []string) error {
 	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
 
 	name := fs.String("name", "", "profile name")
 	user := fs.String("user", "", "user name")
 	project := fs.String("project", "", "project name")
+	forceOverwrite := false
+	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
+	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
+
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	exist, err := profile.Exist(*name)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		if err := profile.Create(*name, *user, *project); err != nil {
+			return err
+		}
+		return nil
+	}
+	if !forceOverwrite {
+		ow, err := askToOverwrite(*name)
+		if err != nil {
+			return err
+		}
+		if !ow {
+			return nil
+		}
+	}
+	if err := profile.Update(*name, *user, *project); err != nil {
+		return err
+	}
+	return nil
+}
+
+func runProfileGet(args []string) error {
+	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
+
+	name := fs.String("name", "", "profile name")
+	forceOverwrite := false
+	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
+	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
+
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+
+	p, err := profile.Get(*name)
+	if err != nil {
+		return err
+	}
+	if err := printGetOutput(p); err != nil {
+		return err
+	}
+	return nil
+}
+
+func runProfileList(args []string) error {
+	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
+
 	extendedFiles := fs.Bool("e", false, "output files with extra fields")
 	allFiles := fs.Bool("a", false, "output all yaml-files")
 	longOutput := fs.Bool("l", false, "detailed output")
@@ -25,93 +104,56 @@ func runProfile(args []string) error {
 	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
 	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
 
-	if len(args) == 0 {
-		printHelp()
-		return nil
-	}
-
-	if err := fs.Parse(args[1:]); err != nil {
+	if err := fs.Parse(args); err != nil {
 		return err
 	}
 
-	switch args[0] {
-	case "create":
-		exist, err := profile.Exist(*name)
-		if err != nil {
+	var err error
+	var profiles []profile.Profile
+	if *allFiles {
+		profiles, err = profile.List(profile.All)
+	} else if *extendedFiles {
+		profiles, err = profile.List(profile.ValidOrExtended)
+	} else {
+		profiles, err = profile.List(profile.Valid)
+	}
+	if err != nil {
+		return err
+	}
+	if *longOutput {
+		if err := printProfilesDetails(profiles); err != nil {
 			return err
 		}
-		if !exist {
-			if err := profile.Create(*name, *user, *project); err != nil {
-				return err
-			}
-			return nil
-		}
-		if !forceOverwrite {
-			ow, err := askToOverwrite(*name)
-			if err != nil {
-				return err
-			}
-			if !ow {
-				return nil
-			}
-		}
-		if err := profile.Update(*name, *user, *project); err != nil {
+	} else {
+		if err := printProfilesShortly(profiles); err != nil {
 			return err
 		}
+	}
+	return nil
+}
 
-	case "get":
-		p, err := profile.Get(*name)
-		if err != nil {
-			return err
-		}
-		if err := printGetOutput(p); err != nil {
-			return err
-		}
+func runProfileDelete(args []string) error {
+	fs := flag.NewFlagSet("profile create", flag.ContinueOnError)
 
-	case "list":
-		var err error
-		var profiles []profile.Profile
-		if *allFiles {
-			profiles, err = profile.List(profile.All)
-		} else if *extendedFiles {
-			profiles, err = profile.List(profile.ValidOrExtended)
-		} else {
-			profiles, err = profile.List(profile.Valid)
-		}
-		if err != nil {
-			return err
-		}
-		if *longOutput {
-			if err := printProfilesDetails(profiles); err != nil {
-				return err
-			}
-		} else {
-			if err := printProfilesShortly(profiles); err != nil {
-				return err
-			}
-		}
+	name := fs.String("name", "", "profile name")
+	forceOverwrite := false
+	fs.BoolVar(&forceOverwrite, "force", false, "overwrite existing profile")
+	fs.BoolVar(&forceOverwrite, "f", false, "overwrite existing profile")
 
-	case "delete":
-		exist, err := profile.Exist(*name)
-		if err != nil {
-			return err
-		}
-		if !exist {
-			fmt.Fprintln(os.Stderr, "profile not exist")
-		}
-		if err := profile.Delete(*name); err != nil {
-			return err
-		}
-
-	case "help":
-		if err := printHelp(); err != nil {
-			return err
-		}
-
-	default:
-		return fmt.Errorf("unknown profile command: %s", args[0])
+	if err := fs.Parse(args); err != nil {
+		return err
 	}
 
+	exist, err := profile.Exist(*name)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		fmt.Fprintln(os.Stderr, "profile not exist")
+	}
+	if err := profile.Delete(*name); err != nil {
+		return err
+	}
 	return nil
 }
 
