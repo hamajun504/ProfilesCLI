@@ -36,7 +36,7 @@ func Load(name string) (Profile, error) {
 	return p, nil
 }
 
-var ErrNotYaml = errors.New("file is not YAML")
+var ErrNotYAML = errors.New("file is not YAML")
 
 func SearchAll(path string, mode FileStructure) ([]Profile, error) {
 	dirEntry, err := os.ReadDir(path)
@@ -51,7 +51,7 @@ func SearchAll(path string, mode FileStructure) ([]Profile, error) {
 	for i := range dirEntry {
 		name, err := getProfileName(dirEntry[i].Name())
 		if err != nil {
-			if errors.Is(err, ErrNotYaml) {
+			if errors.Is(err, ErrNotYAML) {
 				continue
 			}
 			return profiles, err
@@ -92,7 +92,7 @@ func getProfileName(fileName string) (string, error) {
 	if found {
 		return name, nil
 	}
-	return "", ErrNotYaml
+	return "", ErrNotYAML
 }
 
 func getFileName(name string) string {
