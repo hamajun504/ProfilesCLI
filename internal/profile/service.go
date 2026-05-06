@@ -46,7 +46,7 @@ func Update(name, user, project string) error {
 		return err
 	}
 	if !exist {
-		return fmt.Errorf("profile %q does not exists", name)
+		return fmt.Errorf("profile %q does not exist", name)
 	}
 	p := newProfile(name, user, project)
 	if err := Save(p); err != nil {
