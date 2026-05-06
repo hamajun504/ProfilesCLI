@@ -1,6 +1,10 @@
 package profile
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"os"
+)
 
 func Create(name, user, project string) error {
 	if err := validateNewName(name); err != nil {
@@ -99,6 +103,9 @@ func Delete(name string) error {
 	}
 	err := Remove(name)
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
 		return err
 	}
 	return nil

@@ -135,9 +135,6 @@ func Remove(name string) error {
 	fileName := getFileName(name)
 	err := os.Remove(fileName)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return nil
-		}
 		return err
 	}
 	return nil
