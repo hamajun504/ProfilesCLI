@@ -190,7 +190,7 @@ func printGetOutput(p profile.Profile) error {
 
 func askToOverwrite(name string) (bool, error) {
 	reader := bufio.NewReader(os.Stdin)
-	_, err := fmt.Printf("Profile %s already exists. Do you really want to overwrite it? [y/N]", name)
+	_, err := fmt.Printf("Profile %s already exists. Do you really want to overwrite it? [y/N] ", name)
 	if err != nil {
 		return false, err
 	}
