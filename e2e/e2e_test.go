@@ -118,7 +118,7 @@ func TestInvalidNameUserProject(t *testing.T) {
 		args []string
 		want string
 	}{
-		{"create invalid name", []string{"profile", "create", "-name", "bad/name", "-user", "u", "-project", "p"}, "profile name must contain only"},
+		{"create invalid name", []string{"profile", "create", "-name", "bad/name", "-user", "u", "-project", "p"}, "name must not contain path separators"},
 		{"create invalid user", []string{"profile", "create", "-name", "ok", "-user", " ", "-project", "p"}, "user is required"},
 		{"create invalid project", []string{"profile", "create", "-name", "ok", "-user", "u", "-project", "\n"}, "project is required"},
 		{"get invalid name", []string{"profile", "get", "-name", "bad/name"}, "name must not contain path separators"},
