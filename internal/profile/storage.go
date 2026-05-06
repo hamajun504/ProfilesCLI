@@ -36,7 +36,7 @@ func Load(name string) (Profile, error) {
 	return p, nil
 }
 
-var ErrNotYaml = errors.New("the file is not a yaml")
+var ErrNotYaml = errors.New("file is not YAML")
 
 func SearchAll(path string, mode FileStructure) ([]Profile, error) {
 	dirEntry, err := os.ReadDir(path)
