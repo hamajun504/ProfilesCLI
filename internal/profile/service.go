@@ -92,3 +92,11 @@ func Delete(name string) error {
 	}
 	return nil
 }
+
+func Exists(name string) (bool, error) {
+	if err := validateNewName(name); err != nil {
+		return false, err
+	}
+
+	return exists(name)
+}

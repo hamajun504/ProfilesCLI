@@ -108,7 +108,7 @@ func Remove(name string) error {
 	return nil
 }
 
-func Exists(name string) (bool, error) {
+func exists(name string) (bool, error) {
 	_, err := os.Stat(getFileName(name))
 	if err == nil {
 		return true, nil
