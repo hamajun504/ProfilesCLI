@@ -136,20 +136,20 @@ func validateFileStructure(path string, p *Profile) (FileStructure, error) {
 	if err != nil {
 		return All, err
 	}
-	decoderKnown := yaml.NewDecoder(bytes.NewReader(data))
-	decoderKnown.KnownFields(true)
-	decoderUnknown := yaml.NewDecoder(bytes.NewReader(data))
-	decoderUnknown.KnownFields(false)
+	decoderStrict := yaml.NewDecoder(bytes.NewReader(data))
+	decoderStrict.KnownFields(true)
+	decoderNotStrict := yaml.NewDecoder(bytes.NewReader(data))
+	decoderNotStrict.KnownFields(false)
 
-	if decoderUnknown.Decode(&p.Data) != nil {
+	if decoderNotStrict.Decode(&p.Data) != nil {
 		return All, nil
 	}
 	if validateUser(p.Data.User) != nil || validateProject(p.Data.Project) != nil {
 		return All, nil
 	}
-	pExtra := *p
-	if decoderKnown.Decode(&p.Data) != nil {
-		*p = pExtra
+	pBeforeStrictDecode := *p
+	if decoderStrict.Decode(&p.Data) != nil {
+		*p = pBeforeStrictDecode
 		return ValidOrExtended, nil
 	}
 	return Valid, nil
