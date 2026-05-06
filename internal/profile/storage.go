@@ -16,7 +16,7 @@ func Save(name string, p Profile) error {
 		return err
 	}
 	nameFile := getFileName(name)
-	if err = os.WriteFile(nameFile, data, 0644); err != nil {
+	if err = os.WriteFile(nameFile, data, 0o644); err != nil {
 		return err
 	}
 	return nil
