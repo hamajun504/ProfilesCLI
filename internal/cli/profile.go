@@ -161,7 +161,9 @@ func printProfilesDetails(profiles []profile.Profile) error {
 	projectsMaxLen = max(projectsMaxLen, utf8.RuneCountInString("/project/"))
 	{
 		header := formLineProfilesDetails("/name/", "/user/", "/project/", namesMaxLen, usersMaxLen, projectsMaxLen)
-		fmt.Println(header)
+		if _, err := fmt.Println(header); err != nil {
+			return err
+		}
 		//fmt.Println(strings.Repeat("_", len(header)))
 	}
 	for i := range profiles {
