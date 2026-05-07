@@ -228,9 +228,11 @@ test
 Profile name:
 
 - must not be empty;
-- must be a safe file name;
-- must not contain path separators;
-- is used as the YAML file name without extension.
+- is used as the YAML file name without extension;
+- for creating: must contain from 1 to 64 of next symbols: latin letters, numbers or _, -;
+- for reading: must not contain path separators.
+
+Reading allows weaker rules to allow easier creation with external software
 
 User and project:
 
